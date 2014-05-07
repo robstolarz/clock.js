@@ -58,18 +58,16 @@ Function.prototype.callWith = function(self,argsCallingWith){
   }
 }
 //iterate through all .js files in ./api and add the functions to on connection
-fs.readdirSync('./api/').forEach(function(file) {
-  if(path.extname(file)==='.js'){
-    console.log('[Socket Plugins] Loading "'+file+'"');
-    var obj = new(require('./api/'+file));
-    for(var key in obj){
-      if(typeof obj[key] == 'function'){
-        console.log('- loaded function "'+key+'"');
-        io.sockets.on('connection',function(socket){
-          socket.on(key,obj[key].callWith(obj,socket));
-        });
-      }
-    }
+fs.readdirSync(__dirname+'/api/').forEach(function(file) {
+  if(path.extname(file)!=='.js')return;
+  console.log('[Socket Plugins] Loading "'+file+'"');
+  var obj = new(require(__dirname+'/api/'+file));
+  for(var key in obj){
+    if(typeof obj[key] != 'function')break;
+    console.log('- loaded function "'+key+'"');
+    io.sockets.on('connection',function(socket){
+      socket.on(key,obj[key].callWith(obj,socket));
+    });
   }
 });
 // Setup view controller
