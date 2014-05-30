@@ -15,12 +15,13 @@ Weather.prototype.tick["update weather cache"] = {
     console.log("Updating weather cache...");
     new Forecast({APIKey:this.properties.apikey})
       .get(this.properties.lat,this.properties.long,function(err,res,data){
-        if(err) return console.error(err);
+        if (err) return console.error(err);
         console.log("Got the weather.");
         console.log(JSON.stringify(data.currently));
-        me['get weather'](api,{
-          israining:true
-        }); //refresh everyone
+        this.weather = {
+          israining:data.currently.icon=="rain" //check if forecast.io thinks we should display a rain icon
+        };
+        me['get weather'](api,this.weather); //refresh everyone
       }
     );
   },ms:15 * 1000*60 //every (15 minutes to ms)
@@ -30,10 +31,7 @@ Weather.prototype.tick["update weather cache"] = {
 Weather.prototype.weather = null;
 
 Weather.prototype['get weather'] = function(api,gets){
-  if(this.weather){
-    api.socket.emit('weather','hello');
-  }else
-    api.socket.emit('weather',undefined);
+  api.socket.emit('weather',this.weather||undefined);
 }
 
 module.exports = Weather;
