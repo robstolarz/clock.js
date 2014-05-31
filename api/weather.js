@@ -1,6 +1,6 @@
 var Forecast = require('forecast.io');
 
-function Weather(){}
+function Weather() {}
 
 Weather.prototype.properties = {
   apikey:'your key here (ask rob)'
